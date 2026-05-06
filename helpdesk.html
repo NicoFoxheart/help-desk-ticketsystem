@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HelpDesk Pro - IT Ticket Management</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #0066FF;
+  --primary-dark: #0052CC;
+  --success: #00C48C;
+  --warning: #FFB020;
+  --danger: #FF3B3B;
+  --text: #1A1D29;
+  --text-secondary: #6B7280;
+  --bg: #F8FAFC;
+  --card: #FFFFFF;
+  --border: #E5E7EB;
+  --code: #F1F5F9;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* HEADER */
+header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -1px;
+}
+
+.logo span { color: var(--text); }
+
+.stats {
+  display: flex;
+  gap: 32px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  display: block;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* MAIN */
+main {
+  padding: 32px 0;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.3px;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,102,255,0.3);
+}
+
+.btn-secondary {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* FILTERS */
+.filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.filter-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* TICKETS */
+.tickets-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.ticket {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.ticket:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 12px;
+}
+
+.ticket-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.ticket-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-open { background: #EEF2FF; color: #4F46E5; }
+.badge-progress { background: #FEF3C7; color: #D97706; }
+.badge-resolved { background: #D1FAE5; color: #059669; }
+
+.priority-high { background: #FEE2E2; color: #DC2626; }
+.priority-medium { background: #FEF3C7; color: #D97706; }
+.priority-low { background: #E0E7FF; color: #4F46E5; }
+
+.ticket-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.ticket-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.ticket-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.ticket-info {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.ticket-info span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ticket-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.icon-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: #EEF2FF;
+}
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.modal.show { display: flex; align-items: center; justify-content: center; }
+
+.modal-content {
+  background: var(--card);
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  padding: 32px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: var(--code);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: var(--danger);
+  color: white;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  background: var(--card);
+  color: var(--text);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,102,255,0.1);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  font-size: 20px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .stats { display: none; }
+  .form-row { grid-template-columns: 1fr; }
+  .top-bar { flex-direction: column; align-items: stretch; }
+  h1 { font-size: 24px; }
+  .modal-content { padding: 24px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-content">
+      <div class="logo">Help<span>Desk</span></div>
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-value" id="openCount">0</span>
+          <span class="stat-label">Open</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="progressCount">0</span>
+          <span class="stat-label">In Progress</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="resolvedCount">0</span>
+          <span class="stat-label">Resolved</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="top-bar">
+      <h1>Support Tickets</h1>
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="exportTickets()">📊 Export</button>
+        <button class="btn btn-primary" onclick="openNewTicketModal()">+ New Ticket</button>
+      </div>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all" onclick="filterTickets('all')">All Tickets</button>
+      <button class="filter-btn" data-filter="open" onclick="filterTickets('open')">Open</button>
+      <button class="filter-btn" data-filter="progress" onclick="filterTickets('progress')">In Progress</button>
+      <button class="filter-btn" data-filter="resolved" onclick="filterTickets('resolved')">Resolved</button>
+      <button class="filter-btn" data-filter="high" onclick="filterTickets('high')">🔴 High Priority</button>
+    </div>
+
+    <div class="tickets-grid" id="ticketsGrid"></div>
+  </div>
+</main>
+
+<!-- NEW TICKET MODAL -->
+<div class="modal" id="newTicketModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">Create New Ticket</h2>
+      <button class="close-btn" onclick="closeModal('newTicketModal')">×</button>
+    </div>
+    <form onsubmit="createTicket(event)">
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" id="ticketTitle" required placeholder="Brief description of the issue">
+      </div>
+      <div class="form-group">
+        <label>Description *</label>
+        <textarea id="ticketDescription" required placeholder="Detailed explanation of the issue"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Category *</label>
+          <select id="ticketCategory" required>
+            <option value="">Select category</option>
+            <option value="Hardware">Hardware</option>
+            <option value="Software">Software</option>
+            <option value="Network">Network</option>
+            <option value="Access">Access/Permissions</option>
+            <option value="Email">Email</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Priority *</label>
+          <select id="ticketPriority" required>
+            <option value="">Select priority</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Requester Name *</label>
+        <input type="text" id="ticketRequester" required placeholder="Your name">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%; margin-top:8px;">Create Ticket</button>
+    </form>
+  </div>
+</div>
+
+<!-- TICKET DETAIL MODAL -->
+<div class="modal" id="ticketDetailModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title" id="detailTitle"></h2>
+      <button class="close-btn" onclick="closeModal('ticketDetailModal')">×</button>
+    </div>
+    <div id="ticketDetailContent"></div>
+  </div>
+</div>
+
+<script>
+let tickets = JSON.parse(localStorage.getItem('helpdeskTickets')) || [];
+let currentFilter = 'all';
+
+function generateId() {
+  return 'TKT-' + Date.now().toString().slice(-6);
+}
+
+function createTicket(e) {
+  e.preventDefault();
+  const ticket = {
+    id: generateId(),
+    title: document.getElementById('ticketTitle').value,
+    description: document.getElementById('ticketDescription').value,
+    category: document.getElementById('ticketCategory').value,
+    priority: document.getElementById('ticketPriority').value,
+    requester: document.getElementById('ticketRequester').value,
+    status: 'open',
+    createdAt: new Date().toISOString(),
+    assignedTo: null,
+    notes: []
+  };
+  
+  tickets.unshift(ticket);
+  saveTickets();
+  closeModal('newTicketModal');
+  e.target.reset();
+  renderTickets();
+  updateStats();
+}
+
+function saveTickets() {
+  localStorage.setItem('helpdeskTickets', JSON.stringify(tickets));
+}
+
+function updateStats() {
+  document.getElementById('openCount').textContent = tickets.filter(t => t.status === 'open').length;
+  document.getElementById('progressCount').textContent = tickets.filter(t => t.status === 'progress').length;
+  document.getElementById('resolvedCount').textContent = tickets.filter(t => t.status === 'resolved').length;
+}
+
+function renderTickets() {
+  const grid = document.getElementById('ticketsGrid');
+  let filtered = tickets;
+  
+  if (currentFilter !== 'all') {
+    if (currentFilter === 'high') {
+      filtered = tickets.filter(t => t.priority === 'high');
+    } else {
+      filtered = tickets.filter(t => t.status === currentFilter);
+    }
+  }
+  
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">🎫</div>
+        <h3>No tickets found</h3>
+        <p>Create your first support ticket to get started</p>
+        <button class="btn btn-primary" onclick="openNewTicketModal()">+ Create Ticket</button>
+      </div>
+    `;
+    return;
+  }
+  
+  grid.innerHTML = filtered.map(ticket => `
+    <div class="ticket" onclick="viewTicket('${ticket.id}')">
+      <div class="ticket-header">
+        <span class="ticket-id">${ticket.id}</span>
+        <div class="ticket-meta">
+          <span class="badge badge-${ticket.status}">${ticket.status === 'progress' ? 'In Progress' : ticket.status}</span>
+          <span class="badge priority-${ticket.priority}">${ticket.priority}</span>
+        </div>
+      </div>
+      <h3 class="ticket-title">${ticket.title}</h3>
+      <p class="ticket-description">${ticket.description.substring(0, 120)}${ticket.description.length > 120 ? '...' : ''}</p>
+      <div class="ticket-footer">
+        <div class="ticket-info">
+          <span>📁 ${ticket.category}</span>
+          <span>👤 ${ticket.requester}</span>
+          <span>⏱️ ${new Date(ticket.createdAt).toLocaleDateString()}</span>
+        </div>
+        <div class="ticket-actions">
+          <button class="icon-btn" onclick="event.stopPropagation(); changeStatus('${ticket.id}')" title="Change status">⚡</button>
+          <button class="icon-btn" onclick="event.stopPropagation(); deleteTicket('${ticket.id}')" title="Delete">🗑️</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function viewTicket(id) {
+  const ticket = tickets.find(t => t.id === id);
+  if (!ticket) return;
+  
+  document.getElementById('detailTitle').textContent = ticket.title;
+  document.getElementById('ticketDetailContent').innerHTML = `
+    <div style="margin-bottom: 24px;">
+      <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <span class="badge badge-${ticket.status}">${ticket.status === 'progress' ? 'In Progress' : ticket.status}</span>
+        <span class="badge priority-${ticket.priority}">${ticket.priority} priority</span>
+      </div>
+      <p style="color: var(--text-secondary); margin-bottom: 16px;">${ticket.description}</p>
+      <div style="display: grid; gap: 12px; font-size: 14px;">
+        <div><strong>ID:</strong> ${ticket.id}</div>
+        <div><strong>Category:</strong> ${ticket.category}</div>
+        <div><strong>Requester:</strong> ${ticket.requester}</div>
+        <div><strong>Created:</strong> ${new Date(ticket.createdAt).toLocaleString()}</div>
+        ${ticket.assignedTo ? `<div><strong>Assigned to:</strong> ${ticket.assignedTo}</div>` : ''}
+      </div>
+    </div>
+    ${ticket.notes.length > 0 ? `
+      <div style="border-top: 1px solid var(--border); padding-top: 16px;">
+        <h4 style="margin-bottom: 12px;">Notes</h4>
+        ${ticket.notes.map(note => `
+          <div style="background: var(--code); padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 14px;">
+            <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">${new Date(note.timestamp).toLocaleString()}</div>
+            ${note.text}
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
+    <div style="display: flex; gap: 8px; margin-top: 24px;">
+      <button class="btn btn-primary" onclick="changeStatus('${ticket.id}'); closeModal('ticketDetailModal')">Change Status</button>
+      <button class="btn btn-secondary" onclick="addNote('${ticket.id}')">Add Note</button>
+    </div>
+  `;
+  
+  document.getElementById('ticketDetailModal').classList.add('show');
+}
+
+function changeStatus(id) {
+  const ticket = tickets.find(t => t.id === id);
+  if (!ticket) return;
+  
+  const statuses = ['open', 'progress', 'resolved'];
+  const currentIndex = statuses.indexOf(ticket.status);
+  ticket.status = statuses[(currentIndex + 1) % statuses.length];
+  
+  saveTickets();
+  renderTickets();
+  updateStats();
+}
+
+function deleteTicket(id) {
+  if (!confirm('Delete this ticket?')) return;
+  tickets = tickets.filter(t => t.id !== id);
+  saveTickets();
+  renderTickets();
+  updateStats();
+}
+
+function addNote(id) {
+  const note = prompt('Add a note to this ticket:');
+  if (!note) return;
+  
+  const ticket = tickets.find(t => t.id === id);
+  ticket.notes.push({
+    text: note,
+    timestamp: new Date().toISOString()
+  });
+  
+  saveTickets();
+  viewTicket(id);
+}
+
+function filterTickets(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === filter);
+  });
+  renderTickets();
+}
+
+function openNewTicketModal() {
+  document.getElementById('newTicketModal').classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+function exportTickets() {
+  const data = JSON.stringify(tickets, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `helpdesk-tickets-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+}
+
+// Close modals on background click
+document.querySelectorAll('.modal').forEach(modal => {
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.remove('show');
+  });
+});
+
+// Initialize
+renderTickets();
+updateStats();
+
+// Add some demo tickets if empty
+if (tickets.length === 0) {
+  tickets = [
+    {
+      id: 'TKT-100001',
+      title: 'Computer won\'t connect to network printer',
+      description: 'Unable to print from my workstation. Printer shows as offline in the system.',
+      category: 'Hardware',
+      priority: 'medium',
+      requester: 'Sarah Johnson',
+      status: 'open',
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+      assignedTo: null,
+      notes: []
+    },
+    {
+      id: 'TKT-100002',
+      title: 'Password reset for email account',
+      description: 'Forgot my email password and can\'t access important messages.',
+      category: 'Access',
+      priority: 'high',
+      requester: 'Mike Davis',
+      status: 'progress',
+      createdAt: new Date(Date.now() - 7200000).toISOString(),
+      assignedTo: 'IT Support',
+      notes: [{text: 'Password reset link sent to alternate email', timestamp: new Date(Date.now() - 3600000).toISOString()}]
+    },
+    {
+      id: 'TKT-100003',
+      title: 'Software installation request - Adobe Creative Suite',
+      description: 'Need Adobe Photoshop and Illustrator installed for marketing projects.',
+      category: 'Software',
+      priority: 'low',
+      requester: 'Emma Wilson',
+      status: 'resolved',
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      assignedTo: 'IT Support',
+      notes: [{text: 'License obtained and software installed', timestamp: new Date(Date.now() - 43200000).toISOString()}]
+    }
+  ];
+  saveTickets();
+  renderTickets();
+  updateStats();
+}
+</script>
+
+</body>
+</html>
